@@ -52,10 +52,10 @@ int main() {
         while (true) {
             cout << "请键入相应键位以执行功能: " << endl << endl;
             cout << "0--exit" << endl;
-            cout << "1--创建学生表   6--添加成绩记录   b--删除课程记录   h--学生课程成绩表" << endl;
-            cout << "2--创建课程表   7--修改学生记录   c--删除成绩记录   j--学生成绩统计表" << endl;
-            cout << "3--创建成绩表   8--修改课程记录   e--显示学生记录   k--课程成绩统计表" << endl;
-            cout << "4--添加学生记录 9--修改成绩记录   f--显示课程记录   m--数据库表名" << endl;
+            cout << "1--进货" << endl;
+            cout << "2--退货" << endl;
+            cout << "3--销售" << endl;
+            cout << "4--统计" << endl;
             cout << "请输入: ";
             cin >> op;
             switch (op) {
