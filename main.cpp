@@ -49,10 +49,7 @@ int main() {
 	mysql_init(&mysql);
 
 	if (mysql_real_connect(&mysql, "localhost", "root", "123456", "bookshop", 3306, 0, 0)) {
-	
-			cout << "create table sell successfully" << endl;
-		//init();
-		/*
+		init();
 		while (true) {
 			cout << "请键入相应键位以执行功能: " << endl << endl;
 			cout << "0--exit" << endl;
@@ -73,12 +70,19 @@ int main() {
 			case '3':
 				break;
 			case '4':
+				Sell s;
+				cout << "请输入要查询的年、月：" << endl;
+				int year, month;
+				cin >> year >> month;
+				cout << "当月销售总额：" << s.get_total_sales(year, month, mysql) << " 元" << endl << endl;
+				cout << "当月销售总量：" << s.get_total_number(year, month, mysql) << " 本" << endl << endl;
+				cout << "当月销量排行榜：排名/书号/书名/销量(本)" << endl;
+				s.get_top_ten_books(year, month, mysql);
 				break;
 			default:
 				cout << "功能尚未实现" << endl;
 			}
 		}
-		*/
 	}
 	else
 		cout << "数据库连接失败" << endl;
