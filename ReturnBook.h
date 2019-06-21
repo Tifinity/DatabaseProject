@@ -1,9 +1,10 @@
 #pragma once
 #include <cstring>
-#include<string>
-#include<iostream>
-#include"mysql.h"
+#include <string>
+#include <iostream>
+#include "mysql.h"
 using namespace std;
+
 class ReturnBook {
 public:
 	ReturnBook(MYSQL m_);

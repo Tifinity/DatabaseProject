@@ -8,8 +8,9 @@ void ReturnBook::deleteSellTuple(char* src) {
 	}
 }
 ReturnBook::ReturnBook(MYSQL m_) {
-	if (mysql_query(&m, "create table return ( cname char(20) not null, bname char(20) not null,rdate char(20) not null, primary key(cname,bname,rdate));") != 0) {
+	if (mysql_query(&m_, "create table return_book(cname char(20) not null, bname char(20) not null, rdate char(20) not null, primary key(cname,bname,rdate))") != 0) {
 		printf("create table return fail!\n\n");
+        cout << mysql_error(&m_) << endl;
 	}
 	m = m_;
 }
@@ -97,7 +98,7 @@ void ReturnBook::printReturnList() {
 	cout << cusName << " " << bookName << " " << sdate << endl;
 }
 void ReturnBook::addReturnInfo() {
-	char strquery[100] = "insert into return(cname,bname,rdate) values('";
+	char strquery[100] = "insert into return_book(cname,bname,rdate) values('";
 	strcat(strquery, cusName.c_str());
 	strcat(strquery, "','"); 
 	strcat(strquery, bookName.c_str());
