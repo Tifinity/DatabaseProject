@@ -13,7 +13,7 @@ void init(MYSQL &mysql) {
     mysql_query(&mysql, "drop table if exists supply");
     mysql_query(&mysql, "drop table if exists book");
     mysql_query(&mysql, "drop table if exists customer");
-    mysql_query(&mysql, "drop table if exists supplier");
+    mysql_query(&mysql, "drop table if exists supplier");//?????? ²»ÄÜÉ¾°¡
     
     if (mysql_query(&mysql, "create table book (bid char(20) not null, bname char(20), bnum int, bprice int, primary key(bid))") == 0) {
         cout << "create table book successfully" << endl;
@@ -55,9 +55,8 @@ int main() {
     char op;
     MYSQL mysql;
     mysql_init(&mysql);		
-    
-    if (mysql_real_connect(&mysql, "localhost", "root", "tianHAOyuQI361", "bookshop", 3306, 0, 0)) {
-        //init(mysql);
+    if (mysql_real_connect(&mysql, "localhost", "root", "123456", "bookshop", 3306, 0, 0)) {
+        init(mysql);
         ReturnBook RB(mysql);
         Sell SL(mysql);
         while (true) {
