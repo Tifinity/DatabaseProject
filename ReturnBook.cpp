@@ -1,7 +1,13 @@
 #include"ReturnBook.h"
-void ReturnBook::deleteSellTuple(char* src) {
-	char strquery1[100] = "delete from sell s where s.sell_id='";
-	strcat(strquery1, src);
+void ReturnBook::deleteSellTuple(char* cid,char* bid,char* sdate) {
+	char strquery1[100] = "delete from sell where cid='";
+	strcat(strquery1, cid);
+	strcat(strquery1, "'");
+	strcat(strquery1, " and bid='");
+	strcat(strquery1, bid);
+	strcat(strquery1, "'");
+	strcat(strquery1, " and sdate='");
+	strcat(strquery1, sdate);
 	strcat(strquery1, "';");
 	if (mysql_query(&m, strquery1) != 0) {
 		printf("query fail!\n");
@@ -59,7 +65,7 @@ bool ReturnBook::check() {
 		printf("query fail!\n");
 		return false;
 	}
-	char strquery3[100] = "select sell_id from sell s where s.cid='";
+	char strquery3[100] = "select * from sell s where s.cid='";
 	char sell_id[20];
 	strcat(strquery3, cid);
 	strcat(strquery3, "'");
@@ -72,11 +78,11 @@ bool ReturnBook::check() {
 	if (mysql_query(&m, strquery3) == 0) {
 		MYSQL_RES *res = mysql_store_result(&m);
 		if (res != NULL) {
-			deleteSellTuple(sell_id);
+			deleteSellTuple(cid,bid,(char*)sdate.c_str());
 			return true;
 		}
 		else {
-			printf("invalid customer name!\n");
+			printf("invalid return info!\n");
 			return false;
 		}
 	}
@@ -105,6 +111,9 @@ void ReturnBook::addReturnInfo() {
 	strcat(strquery, "','");
 	strcat(strquery, rdate.c_str());
 	strcat(strquery, "');");
+	if (mysql_query(&m, strquery) != 0) {
+		printf("query fail!\n");
+	}
 }
 void ReturnBook::Return() {
 	if (check()) {
