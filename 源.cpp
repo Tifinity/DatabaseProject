@@ -1,3 +1,126 @@
+#include<iostream>
+#include<cstdlib>
+#include<string.h>
+#include<winsock.h>
+#include "purchase.h"
+#include "Sell.h"
+#include "Count.h"
+#include "ReturnBook.h"
+
+using namespace std;
+
+void init(MYSQL &mysql) {
+    if (mysql_query(&mysql, "create table if not exists book (bid char(20) not null, bname char(20), bnum int, bprice int, primary key(bid))") == 0) {
+        cout << "create table book successfully" << endl;
+    }
+    else {
+        cout << "create table book failed" << endl;
+    }
+
+    if (mysql_query(&mysql, "create table if not exists customer (cid char(20) not null primary key, cname char(20))") == 0) {
+        cout << "create table customer successfully" << endl;
+    }
+    else {
+        cout << "create table cuetomer failed" << endl;
+    }
+
+    if (mysql_query(&mysql, "create table if not exists supplier (sid char(20) not null primary key, sname char(20))") == 0) {
+        cout << "create table supplier successfully" << endl;
+    }
+    else {
+        cout << "create table supplier failed" << endl;
+    }
+
+    if (mysql_query(&mysql, "create table if not exists sell (cid char(20), bid char(20), sdate char(20), primary key(cid, bid, sdate), foreign key(cid) references customer(cid), foreign key(bid) references book(bid) )") == 0) {
+        cout << "create table sell successfully" << endl;
+    }
+    else {
+        cout << "create table sell failed" << endl;
+    }
+}
+
+int main() {
+    char op;
+    MYSQL mysql;
+    mysql_init(&mysql);		
+    
+    if (mysql_real_connect(&mysql, "localhost", "root", "tianHAOyuQI361", "bookshop", 3306, 0, 0)) {
+        init(mysql);
+        PurchaseBook PC(mysql);
+        ReturnBook RB(mysql);
+        Sell SL(mysql);
+        Count C;
+        while (true) {
+            cout << "ËØ∑ÈîÆÂÖ•Áõ∏Â∫îÈîÆ‰Ωç‰ª•ÊâßË°åÂäüËÉΩ: " << endl << endl;
+            cout << "0--exit" << endl;
+            cout << "1--ËøõË¥ß" << endl;
+            cout << "2--ÈÄÄË¥ß" << endl;
+            cout << "3--ÈîÄÂîÆ" << endl;
+            cout << "4--ÁªüËÆ°" << endl;
+            cout << "ËØ∑ËæìÂÖ•: ";
+            cin >> op;
+            switch (op) {
+            case '0':
+                exit(0);
+                break;
+            case '1': {
+                cout << "ËØ∑ËæìÂÖ•ÂΩìÂâçÁöÑÂπ¥„ÄÅÊúàÔºö" << endl;
+                int year, month;
+                string bid;
+
+                cin >> year >> month;
+                cout << "ËØ∑ËæìÂÖ•‰π¶Á±çid" << endl;
+                cin >> bid;
+                PC.Purchase();
+                break;
+            } 
+            case '2': {
+                string cusName, bookName, sdate, rdate;
+                cout << "ËØ∑ËæìÂÖ•È°æÂÆ¢ÂßìÂêç" << endl;
+                cin >> cusName;
+                cout << "ËØ∑ËæìÂÖ•ÈÄÄËøò‰π¶Âêç" << endl;
+                cin >> bookName;
+                cout << "ËØ∑ËæìÂÖ•Ë¥≠‰π∞Êó∂Èó¥" << endl;
+                cin >> sdate;
+                cout << "ËØ∑ËæìÂÖ•ÈÄÄËøòÊó∂Èó¥" << endl;
+                cin >> rdate;
+                RB.setValue(cusName, bookName, sdate, rdate);
+                RB.Return();
+                break;
+            }
+            case '3': {
+                string bid;
+                string cid;
+                string date;
+                cout << "ËØ∑ËæìÂÖ•bid" << endl;
+                cin >> bid;
+                cout << "ËØ∑ËæìÂÖ•È°æÂÆ¢id" << endl;
+                cin >> cid;
+                cout << "ËØ∑ËæìÂÖ•Ë¥≠‰π∞Êó•Êúü" << endl;
+                cin >> date;
+                SL.sell(bid, cid, date);
+                break;
+            }
+            case '4':
+                cout << "ËØ∑ËæìÂÖ•Ë¶ÅÊü•ËØ¢ÁöÑÂπ¥„ÄÅÊúàÔºö" << endl;
+                int year, month;
+                cin >> year >> month;
+                cout << "ÂΩìÊúàÈîÄÂîÆÊÄªÈ¢ùÔºö" << C.get_total_sales(year, month, mysql) << " ÂÖÉ" << endl << endl;
+                cout << "ÂΩìÊúàÈîÄÂîÆÊÄªÈáèÔºö" << C.get_total_number(year, month, mysql) << " Êú¨" << endl << endl;
+                cout << "ÂΩìÊúàÈîÄÈáèÊéíË°åÊ¶úÔºöÊéíÂêç/‰π¶Âè∑/‰π¶Âêç/ÈîÄÈáè(Êú¨)" << endl;
+                C.get_top_ten_books(year, month, mysql);
+                break;
+            default:
+                cout << "ÂäüËÉΩÂ∞öÊú™ÂÆûÁé∞" << endl;
+            }
+        }
+    }
+    else
+        cout << "Êï∞ÊçÆÂ∫ìËøûÊé•Â§±Ë¥•" << endl;
+    mysql_close(&mysql);
+    return 0;
+}
+=======
 <<<<<<< HEAD
 #include<iostream>
 #include<cstdlib>
@@ -14,7 +137,7 @@ void init(MYSQL &mysql) {
     mysql_query(&mysql, "drop table if exists supply");
     mysql_query(&mysql, "drop table if exists book");
     mysql_query(&mysql, "drop table if exists customer");
-    mysql_query(&mysql, "drop table if exists supplier");//?????? ≤ªƒ‹…æ∞°
+    mysql_query(&mysql, "drop table if exists supplier");//?????? ‰∏çËÉΩÂà†Âïä
     
     if (mysql_query(&mysql, "create table book (bid char(20) not null, bname char(20), bnum int, bprice int, primary key(bid))") == 0) {
         cout << "create table book successfully" << endl;
@@ -61,13 +184,13 @@ int main() {
         ReturnBook RB(mysql);
         Sell SL(mysql);
         while (true) {
-            cout << "«Îº¸»Îœ‡”¶º¸Œª“‘÷¥––π¶ƒ‹: " << endl << endl;
+            cout << "ËØ∑ÈîÆÂÖ•Áõ∏Â∫îÈîÆ‰Ωç‰ª•ÊâßË°åÂäüËÉΩ: " << endl << endl;
             cout << "0--exit" << endl;
-            cout << "1--Ω¯ªı" << endl;
-            cout << "2--ÕÀªı" << endl;
-            cout << "3--œ˙ €" << endl;
-            cout << "4--Õ≥º∆" << endl;
-            cout << "«Î ‰»Î: ";
+            cout << "1--ËøõË¥ß" << endl;
+            cout << "2--ÈÄÄË¥ß" << endl;
+            cout << "3--ÈîÄÂîÆ" << endl;
+            cout << "4--ÁªüËÆ°" << endl;
+            cout << "ËØ∑ËæìÂÖ•: ";
             cin >> op;
             switch (op) {
             case '0':
@@ -77,13 +200,13 @@ int main() {
                 break;
             case '2': {
                 string cusName, bookName, sdate, rdate;
-                cout << "«Î ‰»ÎπÀøÕ–’√˚" << endl;
+                cout << "ËØ∑ËæìÂÖ•È°æÂÆ¢ÂßìÂêç" << endl;
                 cin >> cusName;
-                cout << "«Î ‰»ÎÕÀªπ È√˚" << endl;
+                cout << "ËØ∑ËæìÂÖ•ÈÄÄËøò‰π¶Âêç" << endl;
                 cin >> bookName;
-                cout << "«Î ‰»Îπ∫¬Ú ±º‰" << endl;
+                cout << "ËØ∑ËæìÂÖ•Ë¥≠‰π∞Êó∂Èó¥" << endl;
                 cin >> sdate;
-                cout << "«Î ‰»ÎÕÀªπ ±º‰" << endl;
+                cout << "ËØ∑ËæìÂÖ•ÈÄÄËøòÊó∂Èó¥" << endl;
                 cin >> rdate;
                 RB.setValue(cusName, bookName, sdate, rdate);
                 RB.Return();
@@ -94,43 +217,43 @@ int main() {
                 string bid;
                 string cid;
                 string date;
-                cout << "«Î ‰»Îbid" << endl;
+                cout << "ËØ∑ËæìÂÖ•bid" << endl;
                 cin >> bid;
-                cout << "«Î ‰»ÎπÀøÕid" << endl;
+                cout << "ËØ∑ËæìÂÖ•È°æÂÆ¢id" << endl;
                 cin >> cid;
-                cout << "«Î ‰»Îπ∫¬Ú»’∆⁄" << endl;
+                cout << "ËØ∑ËæìÂÖ•Ë¥≠‰π∞Êó•Êúü" << endl;
                 cin >> date;
                 SL.set_values(bid, cid, date);
                 int num = SL.get_inventory();
                 if (num) {
-                    cout << "ø‚¥Ê¡ø£∫" << num << endl;
+                    cout << "Â∫ìÂ≠òÈáèÔºö" << num << endl;
                     SL.update_book_table();
                     SL.update_sell_table();
                     SL.print_sell_list();
                 }
                 else {
-                    cout << "∏√ È“—¬ÙÕÍ" << endl;
+                    cout << "ËØ•‰π¶Â∑≤ÂçñÂÆå" << endl;
                 }
 
                 break;
             }
             case '4':
                 Count c;
-                cout << "«Î ‰»Î“™≤È—ØµƒƒÍ°¢‘¬£∫" << endl;
+                cout << "ËØ∑ËæìÂÖ•Ë¶ÅÊü•ËØ¢ÁöÑÂπ¥„ÄÅÊúàÔºö" << endl;
                 int year, month;
                 cin >> year >> month;
-                cout << "µ±‘¬œ˙ €◊‹∂Ó£∫" << c.get_total_sales(year, month, mysql) << " ‘™" << endl << endl;
-                cout << "µ±‘¬œ˙ €◊‹¡ø£∫" << c.get_total_number(year, month, mysql) << " ±æ" << endl << endl;
-                cout << "µ±‘¬œ˙¡ø≈≈––∞Ò£∫≈≈√˚/ È∫≈/ È√˚/œ˙¡ø(±æ)" << endl;
+                cout << "ÂΩìÊúàÈîÄÂîÆÊÄªÈ¢ùÔºö" << c.get_total_sales(year, month, mysql) << " ÂÖÉ" << endl << endl;
+                cout << "ÂΩìÊúàÈîÄÂîÆÊÄªÈáèÔºö" << c.get_total_number(year, month, mysql) << " Êú¨" << endl << endl;
+                cout << "ÂΩìÊúàÈîÄÈáèÊéíË°åÊ¶úÔºöÊéíÂêç/‰π¶Âè∑/‰π¶Âêç/ÈîÄÈáè(Êú¨)" << endl;
                 c.get_top_ten_books(year, month, mysql);
                 break;
             default:
-                cout << "π¶ƒ‹…–Œ¥ µœ÷" << endl;
+                cout << "ÂäüËÉΩÂ∞öÊú™ÂÆûÁé∞" << endl;
             }
         }
     }
     else
-        cout << " ˝æ›ø‚¡¨Ω” ß∞‹" << endl;
+        cout << "Êï∞ÊçÆÂ∫ìËøûÊé•Â§±Ë¥•" << endl;
     mysql_close(&mysql);
     return 0;
 =======
@@ -149,7 +272,7 @@ void init(MYSQL &mysql) {
     mysql_query(&mysql, "drop table if exists supply");
     mysql_query(&mysql, "drop table if exists book");
     mysql_query(&mysql, "drop table if exists customer");
-    mysql_query(&mysql, "drop table if exists supplier");//?????? ≤ªƒ‹…æ∞°
+    mysql_query(&mysql, "drop table if exists supplier");//?????? ‰∏çËÉΩÂà†Âïä
     
     if (mysql_query(&mysql, "create table book (bid char(20) not null, bname char(20), bnum int, bprice int, primary key(bid))") == 0) {
         cout << "create table book successfully" << endl;
@@ -196,13 +319,13 @@ int main() {
         ReturnBook RB(mysql);
         Sell SL(mysql);
         while (true) {
-            cout << "«Îº¸»Îœ‡”¶º¸Œª“‘÷¥––π¶ƒ‹: " << endl << endl;
+            cout << "ËØ∑ÈîÆÂÖ•Áõ∏Â∫îÈîÆ‰Ωç‰ª•ÊâßË°åÂäüËÉΩ: " << endl << endl;
             cout << "0--exit" << endl;
-            cout << "1--Ω¯ªı" << endl;
-            cout << "2--ÕÀªı" << endl;
-            cout << "3--œ˙ €" << endl;
-            cout << "4--Õ≥º∆" << endl;
-            cout << "«Î ‰»Î: ";
+            cout << "1--ËøõË¥ß" << endl;
+            cout << "2--ÈÄÄË¥ß" << endl;
+            cout << "3--ÈîÄÂîÆ" << endl;
+            cout << "4--ÁªüËÆ°" << endl;
+            cout << "ËØ∑ËæìÂÖ•: ";
             cin >> op;
             switch (op) {
             case '0':
@@ -212,13 +335,13 @@ int main() {
                 break;
             case '2': {
                 string cusName, bookName, sdate, rdate;
-                cout << "«Î ‰»ÎπÀøÕ–’√˚" << endl;
+                cout << "ËØ∑ËæìÂÖ•È°æÂÆ¢ÂßìÂêç" << endl;
                 cin >> cusName;
-                cout << "«Î ‰»ÎÕÀªπ È√˚" << endl;
+                cout << "ËØ∑ËæìÂÖ•ÈÄÄËøò‰π¶Âêç" << endl;
                 cin >> bookName;
-                cout << "«Î ‰»Îπ∫¬Ú ±º‰" << endl;
+                cout << "ËØ∑ËæìÂÖ•Ë¥≠‰π∞Êó∂Èó¥" << endl;
                 cin >> sdate;
-                cout << "«Î ‰»ÎÕÀªπ ±º‰" << endl;
+                cout << "ËØ∑ËæìÂÖ•ÈÄÄËøòÊó∂Èó¥" << endl;
                 cin >> rdate;
                 RB.setValue(cusName, bookName, sdate, rdate);
                 RB.Return();
@@ -229,44 +352,43 @@ int main() {
                 string bid;
                 string cid;
                 string date;
-                cout << "«Î ‰»Îbid" << endl;
+                cout << "ËØ∑ËæìÂÖ•bid" << endl;
                 cin >> bid;
-                cout << "«Î ‰»ÎπÀøÕid" << endl;
+                cout << "ËØ∑ËæìÂÖ•È°æÂÆ¢id" << endl;
                 cin >> cid;
-                cout << "«Î ‰»Îπ∫¬Ú»’∆⁄" << endl;
+                cout << "ËØ∑ËæìÂÖ•Ë¥≠‰π∞Êó•Êúü" << endl;
                 cin >> date;
                 SL.set_values(bid, cid, date);
                 int num = SL.get_inventory();
                 if (num) {
-                    cout << "ø‚¥Ê¡ø£∫" << num << endl;
+                    cout << "Â∫ìÂ≠òÈáèÔºö" << num << endl;
                     SL.update_book_table();
                     SL.update_sell_table();
                     SL.print_sell_list();
                 }
                 else {
-                    cout << "∏√ È“—¬ÙÕÍ" << endl;
+                    cout << "ËØ•‰π¶Â∑≤ÂçñÂÆå" << endl;
                 }
 
                 break;
             }
             case '4':
                 Count c;
-                cout << "«Î ‰»Î“™≤È—ØµƒƒÍ°¢‘¬£∫" << endl;
+                cout << "ËØ∑ËæìÂÖ•Ë¶ÅÊü•ËØ¢ÁöÑÂπ¥„ÄÅÊúàÔºö" << endl;
                 int year, month;
                 cin >> year >> month;
-                cout << "µ±‘¬œ˙ €◊‹∂Ó£∫" << c.get_total_sales(year, month, mysql) << " ‘™" << endl << endl;
-                cout << "µ±‘¬œ˙ €◊‹¡ø£∫" << c.get_total_number(year, month, mysql) << " ±æ" << endl << endl;
-                cout << "µ±‘¬œ˙¡ø≈≈––∞Ò£∫≈≈√˚/ È∫≈/ È√˚/œ˙¡ø(±æ)" << endl;
+                cout << "ÂΩìÊúàÈîÄÂîÆÊÄªÈ¢ùÔºö" << c.get_total_sales(year, month, mysql) << " ÂÖÉ" << endl << endl;
+                cout << "ÂΩìÊúàÈîÄÂîÆÊÄªÈáèÔºö" << c.get_total_number(year, month, mysql) << " Êú¨" << endl << endl;
+                cout << "ÂΩìÊúàÈîÄÈáèÊéíË°åÊ¶úÔºöÊéíÂêç/‰π¶Âè∑/‰π¶Âêç/ÈîÄÈáè(Êú¨)" << endl;
                 c.get_top_ten_books(year, month, mysql);
                 break;
             default:
-                cout << "π¶ƒ‹…–Œ¥ µœ÷" << endl;
+                cout << "ÂäüËÉΩÂ∞öÊú™ÂÆûÁé∞" << endl;
             }
         }
     }
     else
-        cout << " ˝æ›ø‚¡¨Ω” ß∞‹" << endl;
+        cout << "Êï∞ÊçÆÂ∫ìËøûÊé•Â§±Ë¥•" << endl;
     mysql_close(&mysql);
     return 0;
->>>>>>> 08c77b272d341db235e7c7213a573fba3e840e53
 }
