@@ -1,16 +1,51 @@
 #include"ReturnBook.h"
-void ReturnBook::deleteSellTuple(char* cid,char* bid,char* sdate) {
-	char strquery1[100] = "delete from sell where cid='";
-	strcat(strquery1, cid);
-	strcat(strquery1, "'");
-	strcat(strquery1, " and bid='");
-	strcat(strquery1, bid);
-	strcat(strquery1, "'");
-	strcat(strquery1, " and sdate='");
-	strcat(strquery1, sdate);
-	strcat(strquery1, "';");
-	if (mysql_query(&m, strquery1) != 0) {
+void ReturnBook::updateSellRecord(char* cid,char* bid,char* sdate) {
+	char strquery[100] = "select num from sell where cid='";
+	strcat(strquery, cid);
+	strcat(strquery, "'");
+	strcat(strquery, " and bid='");
+	strcat(strquery, bid);
+	strcat(strquery, "'");
+	strcat(strquery, " and sdate='");
+	strcat(strquery, sdate);
+	strcat(strquery, "';");
+	if (mysql_query(&m, strquery) != 0) {
 		printf("query fail!\n");
+	}
+	char num[10];
+	MYSQL_RES *res = mysql_store_result(&m);
+	if (res != NULL) {
+		MYSQL_ROW row = mysql_fetch_row(res);
+		strcpy(num, row[0]);
+	}
+	string snum = num;
+	if (snum == "1") {
+		char strquery1[100] = "delete from sell where cid='";
+		strcat(strquery1, cid);
+		strcat(strquery1, "'");
+		strcat(strquery1, " and bid='");
+		strcat(strquery1, bid);
+		strcat(strquery1, "'");
+		strcat(strquery1, " and sdate='");
+		strcat(strquery1, sdate);
+		strcat(strquery1, "';");
+		if (mysql_query(&m, strquery1) != 0) {
+			printf("query fail!\n");
+		}
+	}
+	else {
+		char strquery1[100] = "update sell set num=num-1 where cid='";
+		strcat(strquery1, cid);
+		strcat(strquery1, "'");
+		strcat(strquery1, " and bid='");
+		strcat(strquery1, bid);
+		strcat(strquery1, "'");
+		strcat(strquery1, " and sdate='");
+		strcat(strquery1, sdate);
+		strcat(strquery1, "';");
+		if (mysql_query(&m, strquery1) != 0) {
+			printf("query fail!\n");
+		}
 	}
 }
 ReturnBook::ReturnBook(MYSQL m_) {
@@ -65,20 +100,20 @@ bool ReturnBook::check() {
 		printf("query fail!\n");
 		return false;
 	}
-	char strquery3[100] = "select * from sell s where s.cid='";
+	char strquery3[100] = "select * from sell where cid='";
 	char sell_id[20];
 	strcat(strquery3, cid);
 	strcat(strquery3, "'");
-	strcat(strquery3, " and s.bid='");
+	strcat(strquery3, " and bid='");
 	strcat(strquery3, bid);
 	strcat(strquery3, "'");
-	strcat(strquery3, " and s.sdate='");
+	strcat(strquery3, " and sdate='");
 	strcat(strquery3, sdate.c_str());
 	strcat(strquery3, "';");
 	if (mysql_query(&m, strquery3) == 0) {
 		MYSQL_RES *res = mysql_store_result(&m);
 		if (res != NULL) {
-			deleteSellTuple(cid,bid,(char*)sdate.c_str());
+			updateSellRecord(cid,bid,(char*)sdate.c_str());
 			return true;
 		}
 		else {
@@ -92,7 +127,7 @@ bool ReturnBook::check() {
 	}
 }
 void ReturnBook::updateStock() {
-	char strquery1[100] = "update book b set b.bnum=b.bnum-1 where b.bid='";
+	char strquery1[100] = "update book b set b.bnum=b.bnum+1 where b.bid='";
 	strcat(strquery1, bid);
 	strcat(strquery1, "';");
 	if (mysql_query(&m, strquery1) != 0) {
