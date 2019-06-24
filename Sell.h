@@ -23,5 +23,5 @@ public:
         cid = cid_; 
         date = date_;
     };
-    bool sell();
+    bool sell(string bid, string cid, string date);
 };

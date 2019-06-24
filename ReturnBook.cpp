@@ -86,7 +86,7 @@ bool ReturnBook::check() {
 	}
 }
 void ReturnBook::updateStock() {
-	char strquery1[100] = "update book b set b.bnum=b.bnum-1 where b.bid='";
+	char strquery1[100] = "update book b set b.bnum=b.bnum+1 where b.bid='";
 	strcat(strquery1, bid);
 	strcat(strquery1, "';");
 	if (mysql_query(&m, strquery1) != 0) {
